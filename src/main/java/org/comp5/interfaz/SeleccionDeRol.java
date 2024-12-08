@@ -124,10 +124,10 @@ public class SeleccionDeRol extends JFrame {
         dispose(); // Cierra la ventana actual
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            SeleccionDeRol seleccionDeRol = new SeleccionDeRol();
-            seleccionDeRol.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            SeleccionDeRol seleccionDeRol = new SeleccionDeRol();
+//            seleccionDeRol.setVisible(true);
+//        });
+//    }
 }

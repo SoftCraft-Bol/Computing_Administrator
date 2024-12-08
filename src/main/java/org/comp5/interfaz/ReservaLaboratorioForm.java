@@ -274,10 +274,10 @@ public class ReservaLaboratorioForm extends JFrame {
         purposeField.setText("");
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ReservaLaboratorioForm form = new ReservaLaboratorioForm("Administrador", "Alfredo");
-            form.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            ReservaLaboratorioForm form = new ReservaLaboratorioForm("Administrador", "Alfredo");
+//            form.setVisible(true);
+//        });
+//    }
 }
