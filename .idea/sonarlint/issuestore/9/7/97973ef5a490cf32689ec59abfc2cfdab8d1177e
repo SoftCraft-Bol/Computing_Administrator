@@ -1,9 +1,0 @@
-
-r	java:S106U"+Replace this use of System.out by a logger.(ãçˆİÿÿÿÿÿ8«âÊ‹°2J$34c7aa0a-2e99-43c2-9637-aa3a7f23902d
-m	java:S106W"+Replace this use of System.out by a logger.(•¬æ×8­âÊ‹°2J$937dda90-2055-46f5-af85-2c746a33abb1
-b
-java:S6905_"Don't use the query "SELECT *".(İ„šà8äæï’¶2J$6d48059b-d850-4ce6-bd61-6d990cb69f2d
-p
-java:S1128"(Remove this unused import 'javax.swing'.(Ìí¿Üüÿÿÿÿ8ÿöƒ“¶2J$9f1e53d8-b9d5-4c1c-8403-e48831896242
-ˆ
-java:S1128"@Remove this unused import 'javax.swing.table.DefaultTableModel'.(è†åûÿÿÿÿ8ÿöƒ“¶2J$b0255441-1e2a-4187-856d-2ed5cad5a3df
