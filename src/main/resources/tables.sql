@@ -152,3 +152,6 @@ CREATE TABLE acceso_laboratorio (
                                     FOREIGN KEY (laboratorio_id) REFERENCES laboratorio(id) ON DELETE CASCADE,
                                     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+-- Agregar la columna id_rol_padre a la tabla roles
+ALTER TABLE roles ADD COLUMN id_rol_padre INT DEFAULT NULL;
