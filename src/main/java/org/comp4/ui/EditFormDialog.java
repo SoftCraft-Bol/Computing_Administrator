@@ -1,14 +1,13 @@
 package org.comp4.ui;
 
 import org.comp4.componet4.TrabajoDAO;
-import org.comp4.componet4.UsuarioDAO;
+import org.comp4.componet3.UsuarioDAO;
 import org.comp4.model.Trabajo;
 import org.comp4.model.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class EditFormDialog extends JDialog {

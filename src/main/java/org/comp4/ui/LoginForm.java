@@ -1,6 +1,8 @@
 package org.comp4.ui;
 
-import org.comp4.componet4.UsuarioDAO;
+import org.comp4.componet3.UsuarioDAO;
+import org.comp4.model.Rol;
+import org.comp4.model.Usuario;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -93,14 +95,30 @@ public class LoginForm extends JFrame {
         String password = new String(passwordField.getPassword());
 
         UsuarioDAO usuarioDAO = new UsuarioDAO();
-        if (usuarioDAO.validarLogin(username, password)) {
+        Usuario usuario = usuarioDAO.obtenerUsuarioPorEmail(username);
+
+        if (usuario != null && usuario.getPassword().equals(password)) {
             JOptionPane.showMessageDialog(this, "Login exitoso");
-            new TablaMantenimiento().setVisible(true);
+
+            // Obtener roles
+            StringBuilder rolesMensaje = new StringBuilder("Roles:\n");
+            for (Rol rol : usuario.getRoles()) {
+                rolesMensaje.append("- ").append(rol.getNombre()).append("\n");
+            }
+            JOptionPane.showMessageDialog(this, rolesMensaje.toString());
+
+            // Redirigir según roles
+            if (usuario.getRoles().stream().anyMatch(rol -> rol.getNombre().equals("Jefe de Departamento de Informática y Sistemas"))) {
+                new TablaMantenimiento().setVisible(true);
+            } else {
+                new TablaUsuario().setVisible(true);
+            }
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new LoginForm().setVisible(true));
