@@ -1,8 +1,12 @@
 package org.comp5.interfaz;
 
+import org.comp5.controllador.DataBase;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.sql.SQLException;
+import java.util.List;
 
 public class SeleccionDeRol extends JFrame {
     private JComboBox<String> rolBox;
@@ -25,7 +29,6 @@ public class SeleccionDeRol extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campos del formulario
         rolBox = new JComboBox<>(new String[]{
                 "Seleccionar Rol",
                 "Docentes de Pizarra",
@@ -35,9 +38,7 @@ public class SeleccionDeRol extends JFrame {
         });
 
         usuarioBox = new JComboBox<>(new String[]{"Seleccionar Usuario"});
-        usuarioBox.setEnabled(false); // Inicialmente deshabilitado
-
-        // Agregar acción para cargar usuarios según el rol seleccionado
+        usuarioBox.setEnabled(false);
         rolBox.addActionListener(e -> cargarUsuariosSegunRol());
 
         int row = 0;
@@ -90,25 +91,20 @@ public class SeleccionDeRol extends JFrame {
             usuarioBox.setEnabled(false);
             return;
         }
-
-        // Simular una consulta a la base de datos para cargar usuarios según el rol seleccionado
-        usuarioBox.setEnabled(true);
-        switch (rolSeleccionado) {
-            case "Docentes de Pizarra":
-                usuarioBox.addItem("Juan Pérez");
-                usuarioBox.addItem("María López");
-                break;
-            case "Docentes a Dedicación Exclusiva":
-                usuarioBox.addItem("Carlos Martínez");
-                usuarioBox.addItem("Ana González");
-                break;
-            case "Auxiliares de Pizarra":
-                usuarioBox.addItem("Luis Torres");
-                usuarioBox.addItem("Marta García");
-                break;
-            case "Administrador de Laboratorio":
-                usuarioBox.addItem("Sofía Ramírez");
-                break;
+        DataBase db = new DataBase();
+        try {
+            List<String> usuarios = db.obtenerUsuariosPorRol(rolSeleccionado);
+            if (!usuarios.isEmpty()) {
+                usuarioBox.setEnabled(true);
+                for (String usuario : usuarios) {
+                    usuarioBox.addItem(usuario);
+                }
+            } else {
+                usuarioBox.setEnabled(false);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar usuarios: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

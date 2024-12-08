@@ -1,20 +1,24 @@
 package org.comp5.interfaz;
 
 import com.toedter.calendar.JDateChooser;
+import org.comp5.controllador.DataBase;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class ReservaLaboratorioForm extends JFrame {
     private JDateChooser dateField;
     private JSpinner timeField;
-    private JTextField durationField;
+    private JSpinner durationField;
     private JTextArea purposeField;
-    private JComboBox<String> labBox, statusBox;
+    private JComboBox<String> labBox;
     private JButton submitButton, resetButton, backButton;
     private String rolSeleccionado;
     private String usuarioSeleccionado;
@@ -58,6 +62,20 @@ public class ReservaLaboratorioForm extends JFrame {
         tabbedPane.addTab("Reservas Activas", createActiveReservationsTable());
 
         add(tabbedPane, BorderLayout.CENTER);
+        cargarLaboratorios();
+    }
+
+    private void cargarLaboratorios() {
+        DataBase db = new DataBase();
+        try {
+            List<String> laboratorios = db.obtenerLaboratorios();
+            for (String laboratorio : laboratorios) {
+                labBox.addItem(laboratorio);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar laboratorios: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private JPanel createReservationForm() {
@@ -71,7 +89,7 @@ public class ReservaLaboratorioForm extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        labBox = new JComboBox<>(new String[]{"Lab 1", "Lab 2", "Lab 3", "Laboratorio de Redes"});
+        labBox = new JComboBox<>();
 
         dateField = new JDateChooser();
         dateField.setDateFormatString("dd/MM/yyyy");
@@ -82,19 +100,36 @@ public class ReservaLaboratorioForm extends JFrame {
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeField, "HH:mm");
         timeField.setEditor(timeEditor);
 
-        durationField = new JTextField(20);
-        //userField = new JTextField(20);
+        // JSpinner para la duración con intervalos de 90 minutos
+        SpinnerDateModel durationModel = new SpinnerDateModel();
+        durationField = new JSpinner(durationModel);
+        JSpinner.DateEditor durationEditor = new JSpinner.DateEditor(durationField, "HH:mm") {
+            public void setValue(Object value) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime((Date) value);
+                int minutes = cal.get(Calendar.MINUTE);
+                if (minutes % 30 != 0) {
+                    cal.set(Calendar.MINUTE, (minutes / 30) * 30);
+                }
+                getModel().setValue(cal.getTime());
+            }
+        };
+        durationField.setEditor(durationEditor);
+
+        // Establecer el valor inicial y los intervalos de 90 minutos
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 1);
+        calendar.set(Calendar.MINUTE, 30);
+        durationField.setValue(calendar.getTime());
+
         purposeField = new JTextArea(3, 20);
-        statusBox = new JComboBox<>(new String[]{"Pendiente", "Aprobada", "Rechazada"});
 
         int row = 0;
         addFormField(contentPanel, "Laboratorio:", labBox, gbc, row++);
-        addFormField(contentPanel, "Fecha (dd/mm/yyyy):", dateField, gbc, row++);
-        addFormField(contentPanel, "Hora (hh:mm):", timeField, gbc, row++);
-        addFormField(contentPanel, "Duración (minutos):", durationField, gbc, row++);
-        //addFormField(contentPanel, "Usuario:", userField, gbc, row++);
+        addFormField(contentPanel, "Fecha (dd/MM/yyyy):", dateField, gbc, row++);
+        addFormField(contentPanel, "Hora (HH:mm):", timeField, gbc, row++);
+        addFormField(contentPanel, "Duración (HH:mm):", durationField, gbc, row++);
         addFormField(contentPanel, "Propósito:", new JScrollPane(purposeField), gbc, row++);
-        addFormField(contentPanel, "Estado:", statusBox, gbc, row++);
 
         // Botones
         JPanel buttonPanel = new JPanel();
@@ -123,7 +158,7 @@ public class ReservaLaboratorioForm extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(240, 248, 255));
 
-        String[] columnNames = {"ID", "Laboratorio", "Fecha", "Hora", "Duración", "Usuario", "Estado", "Propósito"};
+        String[] columnNames = {"ID", "Laboratorio", "Fecha", "Hora", "Duración", "Usuario", "Propósito"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         JTable table = new JTable(model);
         aplicarEstiloTabla(table);
@@ -135,7 +170,6 @@ public class ReservaLaboratorioForm extends JFrame {
         JButton deleteButton = crearBoton("Eliminar", new Color(220, 20, 60), Color.WHITE);
         JButton editButton = crearBoton("Editar", new Color(30, 144, 255), Color.WHITE);
 
-
         deleteButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Eliminar reserva no implementado."));
         editButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Editar reserva no implementado."));
 
@@ -145,7 +179,21 @@ public class ReservaLaboratorioForm extends JFrame {
         buttonPanel.add(editButton);
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
+        cargarReservasActivas(model);
+
         return panel;
+    }
+    private void cargarReservasActivas(DefaultTableModel model) {
+        DataBase db = new DataBase();
+        try {
+            List<Object[]> reservas = db.obtenerReservasActivas();
+            for (Object[] reserva : reservas) {
+                model.addRow(reserva);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar reservas activas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void addFormField(JPanel panel, String label, JComponent component, GridBagConstraints gbc, int row) {
@@ -185,26 +233,34 @@ public class ReservaLaboratorioForm extends JFrame {
                 JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha.");
                 return;
             }
-            String fecha = new SimpleDateFormat("dd/MM/yyyy").format(selectedDate);
+            String fecha = new SimpleDateFormat("yyyy-MM-dd").format(selectedDate);
             Date selectedTime = (Date) timeField.getValue();
-            String hora = new SimpleDateFormat("HH:mm").format(selectedTime);
-            int duracion = Integer.parseInt(durationField.getText());
-            //String usuario = userField.getText();
+            String hora = new SimpleDateFormat("HH:mm:ss").format(selectedTime);
+            Date selectedDuration = (Date) durationField.getValue();
+            String duracion = new SimpleDateFormat("HH:mm:ss").format(selectedDuration);
             String proposito = purposeField.getText();
+
+            DataBase db = new DataBase();
+            int laboratorioId = db.obtenerLaboratorioIdPorNombre(laboratorio);
+            int usuarioId = db.obtenerUsuarioIdPorNombre(usuarioSeleccionado);
+
+            db.registrarReserva(laboratorioId, usuarioId, java.sql.Date.valueOf(fecha), java.sql.Time.valueOf(hora), java.sql.Time.valueOf(duracion), proposito);
 
             JOptionPane.showMessageDialog(this, "Reserva registrada:\n"
                     + "Laboratorio: " + laboratorio + "\n"
                     + "Fecha: " + fecha + "\n"
                     + "Hora: " + hora + "\n"
-                    + "Duración: " + duracion + " minutos\n"
+                    + "Duración: " + duracion + " hrs\n"
                     + "Propósito: " + proposito, "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             reiniciarFormulario();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al registrar reserva: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
-    public void volverAction(){
+
+    public void volverAction() {
         SeleccionDeRol seleccionDeRol = new SeleccionDeRol();
         seleccionDeRol.setVisible(true);
         dispose();
@@ -214,9 +270,8 @@ public class ReservaLaboratorioForm extends JFrame {
         labBox.setSelectedIndex(0);
         dateField.setDate(null);
         timeField.setValue(new Date());
-        durationField.setText("");
+        durationField.setValue(new Date());
         purposeField.setText("");
-        statusBox.setSelectedIndex(0);
     }
 
     public static void main(String[] args) {
