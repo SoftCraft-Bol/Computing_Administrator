@@ -1,0 +1,21 @@
+
+
+java:S1192"FDefine a constant instead of duplicating this literal "Error" 6 times.(÷—ÙŞÿÿÿÿÿ8Ã«™’¶2J$d966a9be-48d1-4883-9cf8-ed5d1a67ca9b
+‰
+java:S1192%"FDefine a constant instead of duplicating this literal "Arial" 4 times.(¸‹ı›8ÏÎŸ’¶2J$c0849678-0d6d-4610-beca-006790463d5e
+‰
+java:S1659"FDeclare "costField" and all following declarations on a separate line.(Õáıï8¥­™’¶2J$33fab1a2-4f8c-4e9b-b144-1f64e562d4cd
+œ
+java:S1659"TDeclare "serviceDescriptionField" and all following declarations on a separate line.(ÿ¸ùâÿÿÿÿÿ8¦­™’¶2J$67184402-3015-4d03-9d18-f60dcd4e5bea
+‰
+java:S1659"FDeclare "statusBox" and all following declarations on a separate line.(€¯ğÄ8§­™’¶2J$3f6c5fe7-787a-4004-8951-c753e1f8d67d
+‹
+java:S1659"HDeclare "resetButton" and all following declarations on a separate line.(ÿĞÈÚ8¬­™’¶2J$bddc38cf-638d-45a7-8c0c-90f220f2b6d7
+œ
+java:S1450"YRemove the "editButton" field and declare it as a local variable in the relevant methods.(ÿĞÈÚ8µ­™’¶2J$806c34ad-c590-4b69-8aa5-ba82b72bc39d
+
+java:S1450"ZRemove the "resetButton" field and declare it as a local variable in the relevant methods.(ÿĞÈÚ8À­™’¶2J$aef54a74-258e-42ff-8909-3286809698f3
+‘
+java:S3252"IUse static access with "javax.swing.WindowConstants" for "EXIT_ON_CLOSE".(Õû»öşÿÿÿÿ8ŠĞŸ’¶2J$35c80fcb-4101-4cc4-bc3b-d22e608fd686
+z
+java:S1854O"7Remove this useless assignment to local variable "row".(ïò¾æ8‘ĞŸ’¶2J$2461cf41-946f-4dea-9af7-2b6174f583b7

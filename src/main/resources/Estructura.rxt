@@ -1,0 +1,15 @@
+src
+├── main
+│   ├── java
+│   │   ├── com
+│   │   │   ├── gestionmantenimiento
+│   │   │   │   ├── gui
+│   │   │   │   │   └── MantenimientoGUI.java     // Interfaz gráfica
+│   │   │   │   ├── db
+│   │   │   │   │   └── DatabaseConnection.java   // Conexión a la base de datos
+│   │   │   │   ├── dao
+│   │   │   │   │   └── TrabajoMantenimientoDAO.java  // Lógica para CRUD
+│   │   │   │   └── model
+│   │   │   │       └── TrabajoMantenimiento.java  // Clase de modelo para el trabajo
+│   ├── resources
+│   │   └── application.properties
