@@ -73,3 +73,10 @@ INSERT INTO roles_permisos (rol_id, permiso_id) VALUES
 (11, 1), (11, 3),
 (12, 1), (12, 3);
 
+-- Actualizar los roles con la jerarquía correspondiente
+UPDATE roles SET id_rol_padre = NULL WHERE nombre IN ('Director de Carrera de Ingeniería Informática', 'Director de Carrera de Ingeniería de Sistemas', 'Jefe de Departamento de Informática y Sistemas');
+UPDATE roles SET id_rol_padre = 3 WHERE nombre IN ('Secretaria', 'Portero Mensajero', 'Auxiliar de Jefatura');
+UPDATE roles SET id_rol_padre = 6 WHERE nombre IN ('Docentes de Pizarra', 'Docentes a Dedicación Exclusiva', 'Auxiliares de Pizarra');
+UPDATE roles SET id_rol_padre = 10 WHERE nombre IN ('Administrador de Laboratorio de Cómputo', 'Administrador de Laboratorio de Desarrollo', 'Administrador de Laboratorio de Hardware', 'Administrador de Laboratorio de Software');
+UPDATE roles SET id_rol_padre = 11 WHERE nombre = 'Auxiliar Ad-Honorem';
+
