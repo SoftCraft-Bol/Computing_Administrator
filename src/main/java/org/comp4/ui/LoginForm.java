@@ -2,6 +2,7 @@ package org.comp4.ui;
 
 import org.comp4.componet3.UsuarioDAO;
 import org.comp4.model.Rol;
+import java.util.List;
 import org.comp4.model.Usuario;
 
 import javax.swing.*;
@@ -98,26 +99,33 @@ public class LoginForm extends JFrame {
         Usuario usuario = usuarioDAO.obtenerUsuarioPorEmail(username);
 
         if (usuario != null && usuario.getPassword().equals(password)) {
-            JOptionPane.showMessageDialog(this, "Login exitoso");
+            // Obtener permisos del usuario
+            List<String> permisos = usuarioDAO.obtenerPermisosUsuario(usuario.getId());
 
-            // Obtener roles
-            StringBuilder rolesMensaje = new StringBuilder("Roles:\n");
-            for (Rol rol : usuario.getRoles()) {
-                rolesMensaje.append("- ").append(rol.getNombre()).append("\n");
-            }
-            JOptionPane.showMessageDialog(this, rolesMensaje.toString());
+            if (!permisos.isEmpty()) {
+                PermisosFrame permisosFrame = new PermisosFrame(usuario, permisos);
+                permisosFrame.setVisible(true);
 
-            // Redirigir según roles
-            if (usuario.getRoles().stream().anyMatch(rol -> rol.getNombre().equals("Jefe de Departamento de Informática y Sistemas"))) {
-                new TablaMantenimiento().setVisible(true);
+                // Redirigir según el rol al cerrar la ventana de permisos
+                permisosFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosed(java.awt.event.WindowEvent e) {
+                        if (usuario.getRoles().stream().anyMatch(rol -> rol.getNombre().equals("Administrador"))) {
+                            new TablaMantenimiento().setVisible(true);
+                        } else {
+                            new TablaUsuario().setVisible(true);
+                        }
+                        dispose();
+                    }
+                });
             } else {
-                new TablaUsuario().setVisible(true);
+                JOptionPane.showMessageDialog(this, "No tiene permisos asignados", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
 
     public static void main(String[] args) {

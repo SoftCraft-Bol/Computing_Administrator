@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RolDAO {
-    // Obtener roles secundarios de un rol padre
     public List<Rol> obtenerRolesSecundarios(int idRolPadre) {
         List<Rol> roles = new ArrayList<>();
         String query = "SELECT id, nombre FROM roles WHERE id_rol_padre = ?";
@@ -31,5 +30,7 @@ public class RolDAO {
         }
         return roles;
     }
+
+
 }
 

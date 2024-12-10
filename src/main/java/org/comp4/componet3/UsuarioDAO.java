@@ -128,5 +128,76 @@ public class UsuarioDAO {
         return permisos;
     }
 
+    public List<String> obtenerPermisosUsuario(int idUsuario) {
+        List<String> permisos = new ArrayList<>();
+        String query = "SELECT DISTINCT p.nombre " +
+                "FROM usuarios_roles ur " +
+                "JOIN roles_permisos rp ON ur.rol_id = rp.rol_id " +
+                "JOIN permisos p ON rp.permiso_id = p.id " +
+                "WHERE ur.usuario_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idUsuario);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    permisos.add(rs.getString("nombre"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return permisos;
+    }
+
+
+    public void registrarUsuario(String nombre, String email, String password, int rolId) {
+        String query = "INSERT INTO usuarios (nombre, email, password, disponibilidad, carga_trabajo) VALUES (?, ?, ?, 'Disponible', 0)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
+            // Establecer los valores para el usuario
+            stmt.setString(1, nombre);
+            stmt.setString(2, email);
+            stmt.setString(3, password);  // En un entorno real, asegúrate de encriptar la contraseña antes de guardarla
+
+            // Ejecutar la inserción
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                // Obtener el ID del nuevo usuario insertado
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int userId = generatedKeys.getInt(1);
+
+                        // Asignar el rol al usuario
+                        asignarRolUsuario(userId, rolId);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void asignarRolUsuario(int userId, int rolId) {
+        String query = "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Establecer los valores para la relación usuario-rol
+            stmt.setInt(1, userId);
+            stmt.setInt(2, rolId);
+
+            // Ejecutar la inserción
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
