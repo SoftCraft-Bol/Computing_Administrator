@@ -1,17 +1,12 @@
 package org.comp4.model;
 
-public class Rol {
+public class Laboratorio {
     private int id;
     private String nombre;
-    private int idRolPadre;
+    private int capacidad;
+    private String aula;
 
-    public Rol(int id, String nombre) {
-        this.id = id;
-        this.nombre = nombre;
-    }
-
-    public Rol() {}
-
+    // Getters y Setters
     public int getId() {
         return id;
     }
@@ -28,8 +23,20 @@ public class Rol {
         this.nombre = nombre;
     }
 
-    public void setIdRolPadre(int idRolPadre) {
-        this.idRolPadre = idRolPadre;
+    public int getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(int capacidad) {
+        this.capacidad = capacidad;
+    }
+
+    public String getAula() {
+        return aula;
+    }
+
+    public void setAula(String aula) {
+        this.aula = aula;
     }
 
     @Override
