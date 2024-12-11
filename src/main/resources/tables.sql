@@ -128,6 +128,7 @@ CREATE TABLE laboratorio_materia (
                                      FOREIGN KEY (materia_id) REFERENCES materia(id) ON DELETE CASCADE
 );
 
+select * from asistencia;
 -- Control de asistencia del personal
 CREATE TABLE asistencia (
                             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -152,6 +153,66 @@ CREATE TABLE acceso_laboratorio (
                                     FOREIGN KEY (laboratorio_id) REFERENCES laboratorio(id) ON DELETE CASCADE,
                                     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+-- Si ya existe esta columna eliminar con la siguiente:
+ALTER TABLE roles DROP COLUMN id_rol_padre;
+-- Si no existe esa columna insertar directamente
+ALTER TABLE roles
+    ADD COLUMN id_rol_padre INT NULL,
+    ADD CONSTRAINT fk_roles_rol_padre FOREIGN KEY (id_rol_padre) REFERENCES roles(id) ON DELETE SET NULL;
 
--- Agregar la columna id_rol_padre a la tabla roles
-ALTER TABLE roles ADD COLUMN id_rol_padre INT DEFAULT NULL;
+-- Para que la columna se pueda aceptar null
+ALTER TABLE asistencia MODIFY observaciones TEXT NULL;
+
+-- Nuevas tablas
+CREATE TABLE actividades (
+                             id INT AUTO_INCREMENT PRIMARY KEY,
+                             nombre VARCHAR(100) NOT NULL,
+                             descripcion TEXT NOT NULL,
+                             fecha_inicio DATE NOT NULL,
+                             fecha_fin DATE,
+                             estado ENUM('Planificado', 'En Progreso', 'Finalizado', 'Cancelado') NOT NULL DEFAULT 'Planificado',
+                             responsable_id INT,
+                             FOREIGN KEY (responsable_id) REFERENCES usuarios(id) ON DELETE SET NULL
+);
+
+CREATE TABLE evaluaciones (
+                              id INT AUTO_INCREMENT PRIMARY KEY,
+                              actividad_id INT,
+                              evaluador_id INT NOT NULL,
+                              evaluado_id INT NOT NULL,
+                              fecha DATE NOT NULL,
+                              puntuacion INT NOT NULL CHECK (puntuacion BETWEEN 1 AND 5),
+                              comentarios TEXT,
+                              FOREIGN KEY (actividad_id) REFERENCES actividades(id) ON DELETE CASCADE,
+                              FOREIGN KEY (evaluador_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+                              FOREIGN KEY (evaluado_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE procedimientos_no_cumplimiento (
+                                                id INT AUTO_INCREMENT PRIMARY KEY,
+                                                actividad_id INT NOT NULL,
+                                                usuario_id INT NOT NULL,
+                                                descripcion TEXT NOT NULL,
+                                                fecha_inicio DATE NOT NULL,
+                                                fecha_fin DATE,
+                                                estado ENUM('Abierto', 'En Progreso', 'Resuelto', 'Cerrado') NOT NULL DEFAULT 'Abierto',
+                                                FOREIGN KEY (actividad_id) REFERENCES actividades(id) ON DELETE CASCADE,
+                                                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+ALTER TABLE usuarios ADD COLUMN es_superior BOOLEAN NOT NULL DEFAULT FALSE;
+
+INSERT INTO roles (nombre) VALUES ('Supervisor de Actividades'), ('Responsable de Procedimientos');
+
+ALTER TABLE actividades ADD COLUMN departamento_id INT, ADD FOREIGN KEY (departamento_id) REFERENCES departamentos(id);
+
+CREATE TABLE actividad_usuarios (
+                                    id INT AUTO_INCREMENT PRIMARY KEY,
+                                    actividad_id INT NOT NULL,
+                                    usuario_id INT NOT NULL,
+                                    FOREIGN KEY (actividad_id) REFERENCES actividades(id) ON DELETE CASCADE,
+                                    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+
+
