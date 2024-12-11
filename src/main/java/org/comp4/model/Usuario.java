@@ -1,6 +1,6 @@
 package org.comp4.model;
 
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class Usuario {
@@ -20,10 +20,12 @@ public class Usuario {
         this.password = password;
         this.disponibilidad = disponibilidad;
         this.cargaTrabajo = cargaTrabajo;
-        this.roles = roles;
+        this.roles = roles != null ? roles : new ArrayList<>();
     }
 
-    public Usuario() {}
+    public Usuario() {
+        this.roles = new ArrayList<>();
+    }
 
     // Getters y setters
     public int getId() { return id; }
@@ -40,5 +42,11 @@ public class Usuario {
     public void setPassword(String password) { this.password = password; }
     public void setDisponibilidad(String disponibilidad) { this.disponibilidad = disponibilidad; }
     public void setCargaTrabajo(int cargaTrabajo) { this.cargaTrabajo = cargaTrabajo; }
-    public void setRoles(List<Rol> roles) { this.roles = roles; }
+    public void setRoles(List<Rol> roles) { this.roles = roles != null ? roles : new ArrayList<>(); }
+
+    // Sobrescribimos el método toString() para que devuelva el nombre del usuario
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }
